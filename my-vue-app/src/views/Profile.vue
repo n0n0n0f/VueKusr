@@ -31,16 +31,25 @@
       </div>
     </div>
     <div class="reserved-books">
-      <h2>Забронированные книги</h2>
-      <ul>
-        <li v-for="book in reservedBooks" :key="book.id">{{ book.name }}</li>
-      </ul>
-    </div>
+  <h2>Забронированные книги</h2>
+  <ul>
+    <li v-for="reservation in userReservedBooks" :key="reservation.id">
+      <div>
+        <h3>{{ reservation.book.title }}</h3>
+        <p><strong>Пользователь:</strong> {{ reservation.user.name }}</p>
+        <p><strong>Почта:</strong> {{ reservation.user.email }}</p>
+        <p><strong>Телефон:</strong> {{ reservation.user.phone }}</p>
+      </div>
+    </li>
+  </ul>
+</div>
+
+
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'Profile',
@@ -57,8 +66,12 @@ export default {
   },
   computed: {
     ...mapState(['user', 'reservedBooks']),
+  userReservedBooks() {
+    return this.reservedBooks.filter(reservation => reservation.user && reservation.user.id === this.user.id);
+  }
   },
   methods: {
+    ...mapActions(['fetchReservedBooks']),
     editProfile() {
       this.isEditing = true;
       this.editUser = { ...this.user };
@@ -80,8 +93,6 @@ export default {
           console.log('Отправка данных профиля на сервер:', userProfile);
 
           await this.$store.dispatch('updateProfile', userProfile);
-
-          // Проверка состояния пользователя после обновления профиля
           console.log('Данные о пользователе после обновления профиля:', this.$store.state.user);
 
           this.isEditing = false;
@@ -95,7 +106,8 @@ export default {
   },
   async created() {
     await this.$store.dispatch('fetchUser'); // Загрузка данных пользователя
-    this.$store.dispatch('fetchReservedBooks'); // Загрузка списка забронированных книг
+    await this.fetchReservedBooks(); // Загрузка списка забронированных книг
+    console.log('Забронированные книги:', this.reservedBooks);
   }
 };
 </script>

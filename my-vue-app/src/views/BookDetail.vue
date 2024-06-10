@@ -38,9 +38,9 @@
     <p>Загрузка...</p>
   </div>
 </template>
-
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
+import axios from 'axios';
 
 export default {
   name: 'BookDetail',
@@ -52,7 +52,7 @@ export default {
   },
   computed: {
     ...mapState(['books']),
-    ...mapGetters(['isAuthenticated', 'isLibrarian', 'getUser']),
+    ...mapGetters(['isAuthenticated', 'isLibrarian', 'getUser', 'reservedBooks']), // Добавляем reservedBooks в computed
     book() {
       const bookId = parseInt(this.$route.params.id);
       if (!bookId || isNaN(bookId)) {
@@ -91,8 +91,19 @@ export default {
     async reserveBook() {
       if (this.book && this.book.category === 1) {
         try {
-          await this.$store.dispatch('reserveBook', { bookId: this.book.id });
-          this.reservationMessage = 'Запрос на бронирование отправлен библиотекарю.';
+          // Получаем ID пользователя и книги
+          const userId = this.getUser.id;
+          const bookId = this.book.id;
+          
+          // Проверяем, была ли книга уже забронирована пользователем
+          const alreadyReserved = this.reservedBooks.some(reservation => reservation.book_id === bookId && reservation.user_id === userId);
+          if (alreadyReserved) {
+            this.reservationMessage = 'Вы уже забронировали эту книгу.';
+          } else {
+            // Выполняем запрос на бронирование книги
+            await this.$store.dispatch('reserveBook', { bookId });
+            this.reservationMessage = 'Запрос на бронирование отправлен библиотекарю.';
+          }
         } catch (error) {
           this.reservationMessage = 'Ошибка при отправке запроса на бронирование.';
           console.error('Error reserving book:', error);
@@ -117,6 +128,9 @@ export default {
   }
 };
 </script>
+
+
+
 
 <style scoped>
 .book-cover {

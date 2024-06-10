@@ -5,8 +5,8 @@ const store = createStore({
   state: {
     user: JSON.parse(localStorage.getItem('user')) || null,
     books: [],
-    reservedBooks: [],
-    librarians: [] // Список библиотекарей
+    reservedBooks: [], // Добавьте это свойство и инициализируйте его как пустой массив
+    librarians: []
   },
   mutations: {
     setUser(state, user) {
@@ -76,6 +76,38 @@ const store = createStore({
         console.error('Login failed:', error);
       }
     },
+    async reserveBook({ commit, state }, { bookId }) {
+      try {
+        // Получаем ID пользователя из состояния хранилища Vuex
+        const userId = state.user.id;
+    
+        // Подготавливаем данные для отправки
+        const requestData = {
+          user_id: userId,
+          book_id: bookId
+        };
+    
+        // Отправляем запрос на бронирование книги
+        const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/bookings?_relations=users,books', requestData, {
+          headers: {
+            Authorization: `Bearer ${state.user.token}`
+          }
+        });
+    
+        // Выводим в консоль успешный результат бронирования
+        console.log('Reservation successful:', response.data);
+    
+        // Сохраняем забронированную книгу в хранилище
+        const reservedBook = await axios.get(`https://443e3cc17ad7db7e.mokky.dev/books/${bookId}`);
+        commit('setReservedBooks', [...state.reservedBooks, reservedBook.data]);
+      } catch (error) {
+        // В случае ошибки выводим сообщение в консоль
+        console.error('Book reservation failed:', error);
+        throw error; // Повторное возбуждение ошибки для обработки компонентом
+      }
+    },
+    
+    
     async register({ commit }, userData) {
       try {
         const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/register', userData);
@@ -108,14 +140,6 @@ const store = createStore({
         commit('setBooks', response.data);
       } catch (error) {
         console.error('Fetching books failed:', error);
-      }
-    },
-    async fetchReservedBooks({ commit }) {
-      try {
-        const response = await axios.get('https://443e3cc17ad7db7e.mokky.dev/bookings?_relations=users,books');
-        commit('setReservedBooks', response.data);
-      } catch (error) {
-        console.error('Fetching reserved books failed:', error);
       }
     },
     async updateProfile({ commit, state }, userProfile) {
@@ -152,7 +176,7 @@ const store = createStore({
         const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/reviews', {
           book_id: bookId,
           user_id: state.user.id,
-          content,
+          content: content,
           user_name: state.user.name // Добавляем имя пользователя
         }, {
           headers: {
@@ -242,16 +266,29 @@ const store = createStore({
         console.error('Removing librarian failed:', error);
       }
     },
+    async fetchReservedBooks({ commit, state }) {
+      try {
+        const response = await axios.get('https://443e3cc17ad7db7e.mokky.dev/bookings?_relations=users,books', {
+          headers: {
+            Authorization: `Bearer ${state.user.token}`
+          }
+        });
+        commit('setReservedBooks', response.data);
+      } catch (error) {
+        console.error('Fetching reserved books failed:', error);
+      }
+    },
   },
   getters: {
     isAuthenticated: state => !!state.user,
     getUser: state => state.user,
     getBooks: state => state.books,
-    getReservedBooks: state => state.reservedBooks,
     isSystemAdmin: state => state.user && state.user.role === 0,
     isLibrarian: state => state.user && state.user.role === 1,
-    getLibrarians: state => state.librarians
+    getLibrarians: state => state.librarians,
+    reservedBooks: state => state.reservedBooks 
   }
 });
 
 export default store;
+
