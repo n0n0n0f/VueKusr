@@ -4,7 +4,7 @@
       <div class="logo">
         <h1><router-link to="/">Book Service</router-link></h1>
       </div>
-      <nav>
+      <nav aria-label="Main navigation">
         <ul>
           <li><router-link to="/">Каталог книг</router-link></li>
           <li><router-link to="/about">О нас</router-link></li>
@@ -47,8 +47,9 @@ export default {
     const router = useRouter();
 
     const logout = () => {
-      store.dispatch('logout');
-      router.push('/');
+      store.dispatch('logout').then(() => {
+        router.push('/');
+      });
     };
 
     return { logout };

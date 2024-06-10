@@ -62,6 +62,9 @@ const store = createStore({
     },
     addLibrarian(state, librarian) {
       state.librarians.push(librarian);
+    },
+    removeLibrarian(state, librarianId) {
+      state.librarians = state.librarians.filter(librarian => librarian.id !== librarianId);
     }
   },
   actions: {
@@ -119,7 +122,8 @@ const store = createStore({
       try {
         console.log('Отправка данных профиля на сервер:', userProfile);
         const response = await axios.patch(`https://443e3cc17ad7db7e.mokky.dev/users/${state.user.id}`, userProfile, {
-          headers: {
+          headers
+          : {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${state.user.token}`
           }
@@ -224,7 +228,20 @@ const store = createStore({
       } catch (error) {
         console.error('Adding librarian failed:', error);
       }
-    }
+    },
+    async deleteLibrarian({ commit, state }, librarianId) {
+      try {
+        await axios.delete(`https://443e3cc17ad7db7e.mokky.dev/users/${librarianId}`, {
+          headers: {
+            'Authorization': `Bearer ${state.user.token}`
+          }
+        });
+        // После успешного удаления библиотекаря, можно вызвать мутацию для обновления списка библиотекарей
+        commit('removeLibrarian', librarianId);
+      } catch (error) {
+        console.error('Removing librarian failed:', error);
+      }
+    },
   },
   getters: {
     isAuthenticated: state => !!state.user,

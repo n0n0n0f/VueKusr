@@ -111,8 +111,8 @@ export default {
     },
     async removeBook(bookId) {
   try {
-    await this.$store.dispatch('removeBook', bookId); // Вызов метода dispatch для удаления книги
-    this.fetchBooks(); // Загрузка списка книг после успешного удаления
+    await this.$store.dispatch('removeBook', bookId); 
+    this.fetchBooks(); 
   } catch (error) {
     console.error('Error while removing book:', error);
   }

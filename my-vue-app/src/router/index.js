@@ -6,7 +6,7 @@ import Login from '../views/Login.vue';
 import Profile from '../views/Profile.vue';
 import Dashboard from '../views/Dashboard.vue';
 import BookDetail from '../views/BookDetail.vue';
-import Unauthorized from '../views/Unauthorized.vue'; // Удалено расширение ".vue"
+import Unauthorized from '../views/Unauthorized.vue';
 import AdminPanel from '../views/AdminPanel.vue';
 import LibrarianPanel from '../views/LibrarianPanel.vue';
 
@@ -53,13 +53,13 @@ const routes = [
     path: '/admin',
     name: 'AdminPanel',
     component: AdminPanel,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role: 0 },
   },
   {
     path: '/librarian',
     name: 'LibrarianPanel',
     component: LibrarianPanel,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role: 1 },
   },
   {
     path: '/unauthorized',
@@ -79,11 +79,12 @@ router.beforeEach((to, from, next) => {
 
   if (to.matched.some(record => record.meta.requiresAuth) && !loggedIn) {
     next('/login');
-  } else if (to.meta.requiresAuth && loggedIn) {
-    if (user.role === 0 || user.role === 1) {
-      next();
-    } else {
+  } else if (to.matched.some(record => record.meta.requiresAuth) && loggedIn) {
+    const userRole = user.role;
+    if (to.meta.role !== undefined && to.meta.role !== userRole) {
       next('/unauthorized');
+    } else {
+      next();
     }
   } else {
     next();
