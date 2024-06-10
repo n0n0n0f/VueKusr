@@ -75,24 +75,23 @@ export default {
       return Array.from(uniqueAuthors);
     },
     filteredBooks() {
-  let filtered = [...this.books];
-  if (this.selectedGenre) {
-    filtered = filtered.filter(book => book.genre.startsWith(this.selectedGenre));
-  }
-  if (this.selectedAuthor) {
-    filtered = filtered.filter(book => book.author.startsWith(this.selectedAuthor));
-  }
-  const query = this.searchQuery.toLowerCase().trim();
-  if (query) {
-    filtered = filtered.filter(book =>
-      book.title.toLowerCase().startsWith(query) ||
-      book.author.toLowerCase().startsWith(query) ||
-      book.genre.toLowerCase().startsWith(query)
-    );
-  }
-  return filtered;
-},
-
+      let filtered = [...this.books];
+      if (this.selectedGenre) {
+        filtered = filtered.filter(book => book.genre.startsWith(this.selectedGenre));
+      }
+      if (this.selectedAuthor) {
+        filtered = filtered.filter(book => book.author.startsWith(this.selectedAuthor));
+      }
+      const query = this.searchQuery.toLowerCase().trim();
+      if (query) {
+        filtered = filtered.filter(book =>
+          book.title.toLowerCase().startsWith(query) ||
+          book.author.toLowerCase().startsWith(query) ||
+          book.genre.toLowerCase().startsWith(query)
+        );
+      }
+      return filtered;
+    },
     sortedBooks() {
       const sorted = [...this.filteredBooks];
       if (this.sortType === 'genre') {

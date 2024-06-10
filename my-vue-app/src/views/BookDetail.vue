@@ -23,7 +23,6 @@
       <p>Пожалуйста, войдите в систему, чтобы оставить отзыв.</p>
     </div>
 
-    <!-- Добавляем секцию для бронирования -->
     <h2>Бронирование</h2>
     <div v-if="isAuthenticated">
       <button @click="reserveBook" :disabled="book.category !== 1">Забронировать книгу</button>
@@ -38,21 +37,17 @@
     <p>Загрузка...</p>
   </div>
 </template>
+
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
-import axios from 'axios';
-
 export default {
   name: 'BookDetail',
   data() {
-    return {
-      newReview: '',
-      reservationMessage: ''
-    };
+    return { newReview: '', reservationMessage: '' };
   },
   computed: {
     ...mapState(['books']),
-    ...mapGetters(['isAuthenticated', 'isLibrarian', 'getUser', 'reservedBooks']), // Добавляем reservedBooks в computed
+    ...mapGetters(['isAuthenticated', 'isLibrarian', 'getUser', 'reservedBooks']),
     book() {
       const bookId = parseInt(this.$route.params.id);
       if (!bookId || isNaN(bookId)) {
@@ -61,9 +56,7 @@ export default {
       }
       return this.books.find(book => book.id === bookId);
     },
-    reviews() {
-      return this.book ? this.book.reviews || [] : [];
-    },
+    reviews() { return this.book ? this.book.reviews || [] : []; },
   },
   methods: {
     ...mapActions(['fetchBooks', 'fetchReviews', 'addReview', 'deleteReview', 'reserveBook']),
@@ -80,27 +73,16 @@ export default {
         await this.loadReviews();
       }
     },
-    async loadReviews() {
-      if (this.book) {
-        await this.fetchReviews(this.book.id);
-      }
-    },
-    canDeleteReview(review) {
-      return this.isLibrarian && review.user_role !== 'librarian';
-    },
+    async loadReviews() { if (this.book) await this.fetchReviews(this.book.id); },
+    canDeleteReview(review) { return this.isLibrarian && review.user_role !== 'librarian'; },
     async reserveBook() {
       if (this.book && this.book.category === 1) {
         try {
-          // Получаем ID пользователя и книги
           const userId = this.getUser.id;
           const bookId = this.book.id;
-          
-          // Проверяем, была ли книга уже забронирована пользователем
           const alreadyReserved = this.reservedBooks.some(reservation => reservation.book_id === bookId && reservation.user_id === userId);
-          if (alreadyReserved) {
-            this.reservationMessage = 'Вы уже забронировали эту книгу.';
-          } else {
-            // Выполняем запрос на бронирование книги
+          if (alreadyReserved) this.reservationMessage = 'Вы уже забронировали эту книгу.';
+          else {
             await this.$store.dispatch('reserveBook', { bookId });
             this.reservationMessage = 'Запрос на бронирование отправлен библиотекарю.';
           }
@@ -108,34 +90,14 @@ export default {
           this.reservationMessage = 'Ошибка при отправке запроса на бронирование.';
           console.error('Error reserving book:', error);
         }
-      } else {
-        this.reservationMessage = 'Эту книгу нельзя забронировать.';
-      }
+      } else this.reservationMessage = 'Эту книгу нельзя забронировать.';
     }
   },
-  async created() {
-    if (!this.book) {
-      await this.fetchBooks();
-    }
-    await this.loadReviews();
-  },
-  watch: {
-    book(newBook) {
-      if (newBook) {
-        this.loadReviews();
-      }
-    }
-  }
+  async created() { if (!this.book) await this.fetchBooks(); await this.loadReviews(); },
+  watch: { book(newBook) { if (newBook) this.loadReviews(); } }
 };
 </script>
 
-
-
-
 <style scoped>
-.book-cover {
-  width: 200px;
-  height: 300px;
-  object-fit: cover;
-}
+.book-cover { width: 200px; height: 300px; object-fit: cover; }
 </style>

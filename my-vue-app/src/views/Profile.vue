@@ -43,8 +43,6 @@
     </li>
   </ul>
 </div>
-
-
   </div>
 </template>
 
@@ -105,8 +103,8 @@ export default {
     }
   },
   async created() {
-    await this.$store.dispatch('fetchUser'); // Загрузка данных пользователя
-    await this.fetchReservedBooks(); // Загрузка списка забронированных книг
+    await this.$store.dispatch('fetchUser'); 
+    await this.fetchReservedBooks(); 
     console.log('Забронированные книги:', this.reservedBooks);
   }
 };
