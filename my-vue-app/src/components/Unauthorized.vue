@@ -1,8 +1,8 @@
 <template>
   <div>
-      <h1>Ошибка доступа</h1>
-      <p>У вас нет прав доступа к этой странице.</p>
-      <button @click="goHome">Вернуться на главную</button>
+    <h1>Ошибка доступа</h1>
+    <p>У вас нет прав доступа к этой странице.</p>
+    <button @click="goHome">Вернуться на главную</button>
   </div>
 </template>
 
@@ -10,9 +10,9 @@
 export default {
   name: 'Unauthorized',
   methods: {
-      goHome() {
-          this.$router.push('/');
-      }
+    goHome() {
+      this.$router.push('/');
+    }
   }
 }
 </script>

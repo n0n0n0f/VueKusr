@@ -5,7 +5,7 @@ const store = createStore({
   state: {
     user: JSON.parse(localStorage.getItem('user')) || null,
     books: [],
-    reservedBooks: [], // Добавьте это свойство и инициализируйте его как пустой массив
+    reservedBooks: [],
     librarians: []
   },
   mutations: {
@@ -78,36 +78,24 @@ const store = createStore({
     },
     async reserveBook({ commit, state }, { bookId }) {
       try {
-        // Получаем ID пользователя из состояния хранилища Vuex
         const userId = state.user.id;
-    
-        // Подготавливаем данные для отправки
         const requestData = {
           user_id: userId,
           book_id: bookId
         };
-    
-        // Отправляем запрос на бронирование книги
         const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/bookings?_relations=users,books', requestData, {
           headers: {
             Authorization: `Bearer ${state.user.token}`
           }
         });
-    
-        // Выводим в консоль успешный результат бронирования
         console.log('Reservation successful:', response.data);
-    
-        // Сохраняем забронированную книгу в хранилище
         const reservedBook = await axios.get(`https://443e3cc17ad7db7e.mokky.dev/books/${bookId}`);
         commit('setReservedBooks', [...state.reservedBooks, reservedBook.data]);
       } catch (error) {
-        // В случае ошибки выводим сообщение в консоль
         console.error('Book reservation failed:', error);
-        throw error; // Повторное возбуждение ошибки для обработки компонентом
+        throw error;
       }
     },
-    
-    
     async register({ commit }, userData) {
       try {
         const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/register', userData);
@@ -146,8 +134,7 @@ const store = createStore({
       try {
         console.log('Отправка данных профиля на сервер:', userProfile);
         const response = await axios.patch(`https://443e3cc17ad7db7e.mokky.dev/users/${state.user.id}`, userProfile, {
-          headers
-          : {
+          headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${state.user.token}`
           }
@@ -156,6 +143,17 @@ const store = createStore({
         commit('updateUser', response.data);
       } catch (error) {
         console.error('Profile update failed:', error);
+      }
+    },
+    async deleteReview({ commit, state, dispatch }, { bookId, reviewId }) {
+      try {
+        await axios.delete(`https://443e3cc17ad7db7e.mokky.dev/reviews/${reviewId}`, {
+          headers: {
+            'Authorization': `Bearer ${state.user.token}`
+          }});
+        await dispatch('fetchReviews', bookId);
+      } catch (error) {
+        console.error('Removing review failed:', error);
       }
     },
     async fetchReviews({ commit }, bookId) {
@@ -177,7 +175,7 @@ const store = createStore({
           book_id: bookId,
           user_id: state.user.id,
           content: content,
-          user_name: state.user.name // Добавляем имя пользователя
+          user_name: state.user.name
         }, {
           headers: {
             'Content-Type': 'application/json',
@@ -260,7 +258,6 @@ const store = createStore({
             'Authorization': `Bearer ${state.user.token}`
           }
         });
-        // После успешного удаления библиотекаря, можно вызвать мутацию для обновления списка библиотекарей
         commit('removeLibrarian', librarianId);
       } catch (error) {
         console.error('Removing librarian failed:', error);
