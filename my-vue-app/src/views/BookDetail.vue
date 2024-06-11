@@ -18,8 +18,8 @@
         </li>
       </ul>
 
-      <h2 class="section-title">Добавить отзыв</h2>
-      <div v-if="isAuthenticated" class="add-review-form">
+      <h2 class="section-title" v-if="!isLibrarian && !isSystemAdmin">Добавить отзыв</h2>
+      <div v-if="isAuthenticated && !isLibrarian && !isSystemAdmin" class="add-review-form">
         <form @submit.prevent="submitReview" class="review-form">
           <textarea v-model="newReview.content" placeholder="Напишите ваш отзыв" class="review-textarea"></textarea>
           <label for="rating" class="rating-label">Оценка:</label>
@@ -33,17 +33,17 @@
           <button type="submit" class="submit-button">Отправить</button>
         </form>
       </div>
-      <div v-else>
+      <div v-else-if="!isAuthenticated">
         <p>Пожалуйста, войдите в систему, чтобы оставить отзыв.</p>
       </div>
 
-      <h2 class="section-title">Бронирование</h2>
-      <div v-if="isAuthenticated" class="reservation">
+      <h2 class="section-title" v-if="!isLibrarian && !isSystemAdmin">Бронирование</h2>
+      <div v-if="isAuthenticated && !isLibrarian && !isSystemAdmin" class="reservation">
         <button @click="reserveBook" :disabled="book.category !== 1" class="reserve-button">Забронировать книгу</button>
         <p v-if="reservationMessage" class="reservation-message">{{ reservationMessage }}</p>
         <p v-if="book.category !== 1" class="reservation-message">Эту книгу нельзя забронировать.</p>
       </div>
-      <div v-else>
+      <div v-else-if="!isAuthenticated">
         <p>Пожалуйста, войдите в систему, чтобы забронировать книгу.</p>
       </div>
     </div>
@@ -52,6 +52,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
