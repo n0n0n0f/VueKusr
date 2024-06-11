@@ -1,49 +1,68 @@
 <template>
-  <div v-if="book">
-    <h1>{{ book.title }}</h1>
-    <img :src="book.imageUrl || 'default-cover.png'" alt="Обложка" class="book-cover">
-    <p><strong>Автор:</strong> {{ book.author || 'Неизвестно' }}</p>
-    <p><strong>Жанр:</strong> {{ book.genre || 'Неизвестно' }}</p>
-    <p>{{ book.description }}</p>
-    <h2>Отзывы</h2>
-    <ul>
-      <li v-for="review in reviews" :key="review.id">
-        <p><strong>{{ review.user_name }}:</strong> {{ review.content }}</p>
-        <button v-if="canDeleteReview(review)" @click="deleteReviewAction(review.id)">Удалить</button>
-      </li>
-    </ul>
-    <h3>Добавить отзыв</h3>
-    <div v-if="isAuthenticated">
-      <form @submit.prevent="submitReview">
-        <textarea v-model="newReview" placeholder="Напишите ваш отзыв"></textarea>
-        <button type="submit">Отправить</button>
-      </form>
-    </div>
-    <div v-else>
-      <p>Пожалуйста, войдите в систему, чтобы оставить отзыв.</p>
-    </div>
+  <div class="book-detail">
+    <div v-if="book" class="book-info-container">
+      <h1 class="book-title">{{ book.title }}</h1>
+      <img :src="book.imageUrl || 'default-cover.png'" alt="Обложка" class="book-cover">
+      <div class="book-details">
+        <p><strong>Автор:</strong> {{ book.author || 'Неизвестно' }}</p>
+        <p><strong>Жанр:</strong> {{ book.genre || 'Неизвестно' }}</p>
+        <p class="book-description">{{ book.description }}</p>
+      </div>
 
-    <h2>Бронирование</h2>
-    <div v-if="isAuthenticated">
-      <button @click="reserveBook" :disabled="book.category !== 1">Забронировать книгу</button>
-      <p v-if="reservationMessage">{{ reservationMessage }}</p>
-      <p v-if="book.category !== 1">Эту книгу нельзя забронировать.</p>
+      <h2 class="section-title">Отзывы</h2>
+      <ul class="reviews-list">
+        <li v-for="review in reviews" :key="review.id" class="review-item">
+          <p><strong>{{ review.user_name }}:</strong> {{ review.content }}</p>
+          <p><strong>Оценка:</strong> {{ review.rating || 'Нет оценки' }}</p>
+          <button v-if="canDeleteReview(review)" @click="deleteReviewAction(review.id)" class="delete-button">Удалить</button>
+        </li>
+      </ul>
+
+      <h2 class="section-title">Добавить отзыв</h2>
+      <div v-if="isAuthenticated" class="add-review-form">
+        <form @submit.prevent="submitReview" class="review-form">
+          <textarea v-model="newReview.content" placeholder="Напишите ваш отзыв" class="review-textarea"></textarea>
+          <label for="rating" class="rating-label">Оценка:</label>
+          <select v-model="newReview.rating" id="rating" class="rating-select">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+          <button type="submit" class="submit-button">Отправить</button>
+        </form>
+      </div>
+      <div v-else>
+        <p>Пожалуйста, войдите в систему, чтобы оставить отзыв.</p>
+      </div>
+
+      <h2 class="section-title">Бронирование</h2>
+      <div v-if="isAuthenticated" class="reservation">
+        <button @click="reserveBook" :disabled="book.category !== 1" class="reserve-button">Забронировать книгу</button>
+        <p v-if="reservationMessage" class="reservation-message">{{ reservationMessage }}</p>
+        <p v-if="book.category !== 1" class="reservation-message">Эту книгу нельзя забронировать.</p>
+      </div>
+      <div v-else>
+        <p>Пожалуйста, войдите в систему, чтобы забронировать книгу.</p>
+      </div>
     </div>
     <div v-else>
-      <p>Пожалуйста, войдите в систему, чтобы забронировать книгу.</p>
+      <p>Загрузка...</p>
     </div>
-  </div>
-  <div v-else>
-    <p>Загрузка...</p>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
+
 export default {
   name: 'BookDetail',
   data() {
-    return { newReview: '', reservationMessage: '' };
+    return { 
+      newReview: { content: '', rating: 1 },
+      reservationMessage: '' 
+    };
   },
   computed: {
     ...mapState(['books']),
@@ -61,9 +80,9 @@ export default {
   methods: {
     ...mapActions(['fetchBooks', 'fetchReviews', 'addReview', 'deleteReview', 'reserveBook']),
     async submitReview() {
-      if (this.newReview.trim() && this.book) {
-        await this.addReview({ bookId: this.book.id, content: this.newReview });
-        this.newReview = '';
+      if (this.newReview.content.trim() && this.book) {
+        await this.addReview({ bookId: this.book.id, content: this.newReview.content, rating: this.newReview.rating });
+        this.newReview = { content: '', rating: 1 };
         await this.loadReviews();
       }
     },
@@ -99,5 +118,105 @@ export default {
 </script>
 
 <style scoped>
-.book-cover { width: 200px; height: 300px; object-fit: cover; }
+.book-detail {
+  padding: 20px;
+}
+
+.book-info-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.book-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.book-cover {
+  width: 200px;
+  height: 300px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.book-details p {
+  margin-bottom: 5px;
+}
+
+.book-description {
+  margin-top: 10px;
+}
+
+.section-title {
+  font-size: 20px;
+  margin-top: 20px;
+}
+
+.reviews-list {
+  list-style: none;
+  padding: 0;
+}
+
+.review-item {
+  margin-bottom: 20px;
+}
+
+.delete-button {
+  background-color: #e57373;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-review-form {
+  margin-top: 20px;
+}
+
+.review-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+}
+
+.review-textarea {
+  height: 100px;
+  margin-bottom: 10px;
+  resize: vertical;
+}
+
+.rating-label {
+  margin-bottom: 5px;
+}
+
+.rating-select {
+  margin-bottom: 10px;
+}
+
+.submit-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reservation {
+  margin-top: 20px;
+}
+
+.reserve-button {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reservation-message {
+  margin-top: 10px;
+}
 </style>

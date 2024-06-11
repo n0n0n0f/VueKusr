@@ -1,4 +1,5 @@
 <template>
+  <link rel="stylesheet" href="/src/assets/reset.css">
   <div id="app">
     <Header />
     <main>

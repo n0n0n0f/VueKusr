@@ -2,7 +2,7 @@
   <div class="home">
     <h1>Список книг</h1>
     <div>
-      <button @click="toggleFilter">Фильтрация</button>
+      <button @click="toggleFilter" class="filter-toggle">{{ showFilter ? 'Скрыть фильтры' : 'Показать фильтры' }}</button>
       <div v-if="showFilter" class="filter-options">
         <label for="sort">Сортировать по:</label>
         <select v-model="sortType" id="sort">
@@ -26,22 +26,104 @@
         </select>
       </div>
     </div>
-    <input type="text" v-model="searchQuery" placeholder="Поиск книг...">
-    <div v-if="filteredBooks.length">
+    <input type="text" v-model="searchQuery" placeholder="Поиск книг..." class="search-input">
+    <div v-if="filteredBooks.length" class="book-grid">
       <div v-for="book in sortedBooks" :key="book.id" class="book-item">
         <router-link :to="{ name: 'BookDetail', params: { id: book.id } }" class="book-link">
           <img :src="book.imageUrl || 'default-cover.png'" alt="Обложка" class="book-cover">
-          <h2>{{ book.title }}</h2>
-          <p><strong>Автор:</strong> {{ book.author || 'Неизвестно' }}</p>
-          <p><strong>Жанр:</strong> {{ book.genre || 'Неизвестно' }}</p>
+          <div class="book-info">
+            <h2>{{ book.title }}</h2>
+            <p><strong>Автор:</strong> {{ book.author || 'Неизвестно' }}</p>
+            <p><strong>Жанр:</strong> {{ book.genre || 'Неизвестно' }}</p>
+          </div>
         </router-link>
       </div>
     </div>
     <div v-else>
-      <p>Книг нет</p>
+      <p class="no-books">Книг нет</p>
     </div>
+    <div class="decorative-line"></div> <!-- New decorative line -->
   </div>
 </template>
+
+<style scoped>
+.home {
+  padding: 20px;
+}
+
+/* Updated styles for filter toggle button */
+.filter-toggle {
+  background-color: #E57373;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: 10px; /* Added margin */
+}
+
+.filter-options {
+  margin-top: 10px;
+}
+
+/* Updated styles for search input */
+.search-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  margin-bottom: 20px; /* Added margin */
+}
+
+/* New styles for decorative line */
+.decorative-line {
+  border-top: 1px dashed #ccc;
+  margin-top: 40px; /* Adjust as needed */
+  margin-bottom: 20px; /* Added margin */
+}
+
+/* Rest of the styles remain unchanged */
+.book-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.book-item {
+  width: calc(25% - 20px);
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.book-cover {
+  width: 100%;
+  max-height: 400px; 
+  object-fit: cover;
+}
+
+.book-info {
+  padding: 10px;
+}
+
+.book-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.book-link h2 {
+  margin: 0;
+}
+
+.no-books {
+  margin-top: 20px;
+}
+
+</style>
 
 <script>
 import { mapState, mapActions } from 'vuex';
@@ -119,27 +201,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.home {
-  padding: 20px;
-}
-.book-item {
-  margin-bottom: 20px;
-}
-.book-cover {
-  width: 100px;
-  height: 150px;
-  object-fit: cover;
-}
-.book-link {
-  text-decoration: none;
-  color: inherit;
-}
-.book-link h2 {
-  margin: 10px 0;
-}
-.filter-options {
-  margin-top: 10px;
-}
-</style>

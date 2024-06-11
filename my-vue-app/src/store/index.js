@@ -165,7 +165,7 @@ const store = createStore({
         console.error('Fetching reviews failed:', error);
       }
     },
-    async addReview({ commit, state }, { bookId, content }) {
+    async addReview({ commit, state }, { bookId, content, rating }) {
       if (content.trim() === '') {
         console.error('Review content is empty');
         return;
@@ -175,6 +175,7 @@ const store = createStore({
           book_id: bookId,
           user_id: state.user.id,
           content: content,
+          rating: rating, 
           user_name: state.user.name
         }, {
           headers: {

@@ -32,4 +32,75 @@ a,
     grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
   }
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  ul, ol {
+    list-style: none;
+    padding: 0;
+  }
+  
+  body {
+    min-height: 100vh;
+    scroll-behavior: smooth;
+    line-height: 1.5;
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+  }
+  
+  a {
+    text-decoration: none;
+  }
+  
+  :focus {
+    outline: none;
+  }
+  
+  button {
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+  }
+  
+  button::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+  }
+  
+  button, input[type="button"], input[type="reset"], input[type="submit"] {
+    -webkit-appearance: none;
+  }
+  
+  input, textarea, select, button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+  }
+  
+  ::selection {
+    background-color: transparent;
+  }
+  
+  ::-ms-selection {
+    background-color: transparent;
+  }
+  
+  .noselect {
+    user-select: none;
+  }
+  
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
 }
