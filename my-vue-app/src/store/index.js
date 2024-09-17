@@ -274,8 +274,9 @@ const store = createStore({
         commit('setReservedBooks', response.data);
       } catch (error) {
         console.error('Fetching reserved books failed:', error);
-      }
-    },
+        // Обработка ошибки - можно выводить сообщение пользователю
+        commit('setReservedBooks', []); // Устанавливаем пустой массив, чтобы не вызывало ошибок
+      }},
   },
   getters: {
     isAuthenticated: state => !!state.user,

@@ -4,18 +4,19 @@
     <form @submit.prevent="addNewLibrarian" class="form">
       <div class="form-group">
         <label for="name">Имя:</label>
-        <input type="text" v-model="newLibrarian.name" required>
+        <input type="text" v-model="newLibrarian.name" required />
       </div>
       <div class="form-group">
         <label for="email">Email:</label>
-        <input type="email" v-model="newLibrarian.email" required>
+        <input type="email" v-model="newLibrarian.email" required />
       </div>
       <div class="form-group">
         <label for="password">Пароль:</label>
-        <input type="password" v-model="newLibrarian.password" required>
+        <input type="password" v-model="newLibrarian.password" required />
       </div>
       <button type="submit" class="submit-button">Добавить библиотекаря</button>
     </form>
+    
     <h2>Список библиотекарей</h2>
     <ul class="librarians-list">
       <li v-for="librarian in librarians" :key="librarian.id" class="librarian-item">
@@ -30,24 +31,24 @@
 </template>
 
 <script setup>
+import { onMounted, ref, computed } from 'vue';
 import { useStore } from 'vuex';
-import { mapActions, mapGetters } from 'vuex';
 
 const store = useStore();
 
-const newLibrarian = {
+const newLibrarian = ref({
   name: '',
   email: '',
   password: ''
-};
+});
 
 const addNewLibrarian = async () => {
   try {
-    await store.dispatch('addLibrarian', newLibrarian);
-    newLibrarian.name = '';
-    newLibrarian.email = '';
-    newLibrarian.password = '';
-    store.dispatch('fetchLibrarians');
+    await store.dispatch('addLibrarian', newLibrarian.value);
+    newLibrarian.value.name = '';
+    newLibrarian.value.email = '';
+    newLibrarian.value.password = '';
+    await store.dispatch('fetchLibrarians'); 
   } catch (error) {
     console.error('Error adding librarian:', error);
   }
@@ -56,13 +57,19 @@ const addNewLibrarian = async () => {
 const deleteLibrarianAction = async (librarianId) => {
   try {
     await store.dispatch('deleteLibrarian', librarianId);
-    store.dispatch('fetchLibrarians');
+    await store.dispatch('fetchLibrarians'); 
   } catch (error) {
     console.error('Error deleting librarian:', error);
   }
 };
 
-const { isSystemAdmin, getLibrarians } = mapGetters(['isSystemAdmin', 'getLibrarians']);
+// Используем computed для получения данных из геттера Vuex
+const isSystemAdmin = computed(() => store.getters.isSystemAdmin);
+const librarians = computed(() => store.getters.getLibrarians);
+
+onMounted(async () => {
+  await store.dispatch('fetchLibrarians');
+});
 
 </script>
 
@@ -97,7 +104,6 @@ const { isSystemAdmin, getLibrarians } = mapGetters(['isSystemAdmin', 'getLibrar
   border: none;
   padding: 10px 20px;
   text-align: center;
-  text-decoration: none;
   display: inline-block;
   font-size: 16px;
   border-radius: 5px;
@@ -119,8 +125,6 @@ const { isSystemAdmin, getLibrarians } = mapGetters(['isSystemAdmin', 'getLibrar
   border: none;
   padding: 5px 10px;
   text-align: center;
-  text-decoration: none;
-  display: inline-block;
   font-size: 14px;
   border-radius: 5px;
   cursor: pointer;
