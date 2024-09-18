@@ -71,7 +71,11 @@ const store = createStore({
     async login({ commit }, credentials) {
       try {
         const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/auth', credentials);
-        commit('setUser', response.data);
+        const user = response.data;
+        localStorage.setItem('token', user.token);
+        
+        commit('setUser', user);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`; 
       } catch (error) {
         console.error('Login failed:', error);
       }
@@ -99,13 +103,22 @@ const store = createStore({
     async register({ commit }, userData) {
       try {
         const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/register', userData);
-        commit('setUser', response.data);
+        const user = response.data;
+        localStorage.setItem('token', user.token);
+        commit('setUser', user);
+        
+        axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`; 
       } catch (error) {
         console.error('Registration failed:', error);
       }
     },
     async fetchUser({ commit, state }) {
       try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        }
+    
         if (state.user && state.user.token) {
           const response = await axios.get('https://443e3cc17ad7db7e.mokky.dev/auth_me', {
             headers: {
@@ -120,7 +133,10 @@ const store = createStore({
     },
     logout({ commit }) {
       commit('logout');
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization']; // Удаляем токен из заголовков
     },
+    
     async fetchBooks({ commit }) {
       try {
         const response = await axios.get('https://443e3cc17ad7db7e.mokky.dev/books');
