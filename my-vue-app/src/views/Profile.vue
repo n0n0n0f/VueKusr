@@ -2,23 +2,27 @@
   <div class="profile" v-if="user">
     <h1>Профиль пользователя</h1>
     <div class="user-info">
-      <img :src="user.avatar || 'default-avatar.png'" alt="Avatar" class="avatar">
+      <img
+        :src="user.avatar || 'default-avatar.png'"
+        alt="Avatar"
+        class="avatar"
+      />
       <div v-if="isEditing" class="edit-profile">
         <div>
           <label>Логин:</label>
-          <input v-model="editUser.name" type="text">
+          <input v-model="editUser.name" type="text" />
         </div>
         <div>
           <label>Почта:</label>
-          <input v-model="editUser.email" type="email">
+          <input v-model="editUser.email" type="email" />
         </div>
         <div>
           <label>Новый пароль:</label>
-          <input v-model="editUser.password" type="password">
+          <input v-model="editUser.password" type="password" />
         </div>
         <div>
           <label>Телефон:</label>
-          <input v-model="editUser.phone" type="text">
+          <input v-model="editUser.phone" type="text" />
         </div>
         <button @click="saveProfile" class="submit-button">Сохранить</button>
         <button @click="cancelEdit" class="cancel-button">Отмена</button>
@@ -27,7 +31,9 @@
         <p><strong>Логин:</strong> {{ user.name }}</p>
         <p><strong>Почта:</strong> {{ user.email }}</p>
         <p><strong>Телефон:</strong> {{ user.phone }}</p>
-        <button @click="editProfile" class="edit-button">Изменить данные</button>
+        <button @click="editProfile" class="edit-button">
+          Изменить данные
+        </button>
       </div>
     </div>
     <div class="reserved-books">
@@ -43,45 +49,54 @@
         </li>
       </ul>
     </div>
-    <div class="decorative-line"></div> <!-- New decorative line -->
+    <div class="decorative-line"></div>
+    <!-- New decorative line -->
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions } from "vuex";
 
 export default {
-  name: 'Profile',
+  name: "Profile",
   data() {
     return {
       isEditing: false,
       editUser: {
-        name: '',
-        email: '',
-        password: '',
-        phone: '',
-      }
+        name: "",
+        email: "",
+        password: "",
+        phone: "",
+      },
     };
   },
   computed: {
-    ...mapState(['user', 'reservedBooks']),
+    ...mapState(["user", "reservedBooks"]),
     userReservedBooks() {
-      return this.reservedBooks.filter(reservation => reservation.user && reservation.user.id === this.user.id);
-    }
+      return this.reservedBooks.filter(
+        (reservation) =>
+          reservation.user && reservation.user.id === this.user.id
+      );
+    },
   },
   methods: {
-    ...mapActions(['fetchReservedBooks']),
+    ...mapActions(["fetchReservedBooks"]),
     editProfile() {
       this.isEditing = true;
       this.editUser = { ...this.user };
     },
     cancelEdit() {
       this.isEditing = false;
-      this.editUser = { name: '', email: '', password: '', phone: '' };
+      this.editUser = { name: "", email: "", password: "", phone: "" };
     },
     async saveProfile() {
       try {
-        if (this.editUser.name && this.editUser.email && this.editUser.password && this.editUser.phone) {
+        if (
+          this.editUser.name &&
+          this.editUser.email &&
+          this.editUser.password &&
+          this.editUser.phone
+        ) {
           const userProfile = {
             name: this.editUser.name,
             email: this.editUser.email,
@@ -89,24 +104,27 @@ export default {
             phone: this.editUser.phone,
           };
 
-          console.log('Отправка данных профиля на сервер:', userProfile);
+          console.log("Отправка данных профиля на сервер:", userProfile);
 
-          await this.$store.dispatch('updateProfile', userProfile);
-          console.log('Данные о пользователе после обновления профиля:', this.$store.state.user);
+          await this.$store.dispatch("updateProfile", userProfile);
+          console.log(
+            "Данные о пользователе после обновления профиля:",
+            this.$store.state.user
+          );
 
           this.isEditing = false;
         } else {
-          console.error('All fields are required.');
+          console.error("All fields are required.");
         }
       } catch (error) {
-        console.error('Profile update failed:', error);
+        console.error("Profile update failed:", error);
       }
-    }
+    },
   },
   async created() {
-    await this.$store.dispatch('fetchUser');
+    await this.$store.dispatch("fetchUser");
     await this.fetchReservedBooks();
-  }
+  },
 };
 </script>
 
@@ -181,8 +199,7 @@ export default {
 
 .decorative-line {
   border-top: 1px dashed #ccc;
-  margin-top: 40px; 
-  margin-bottom: 20px; 
+  margin-top: 40px;
+  margin-bottom: 20px;
 }
-
 </style>

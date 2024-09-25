@@ -1,21 +1,21 @@
-import { createStore } from 'vuex';
-import axios from 'axios';
+import { createStore } from "vuex";
+import axios from "axios";
 
 const store = createStore({
   state: {
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    user: JSON.parse(localStorage.getItem("user")) || null,
     books: [],
     reservedBooks: [],
-    librarians: []
+    librarians: [],
   },
   mutations: {
     setUser(state, user) {
       state.user = user;
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(user));
     },
     logout(state) {
       state.user = null;
-      localStorage.removeItem('user');
+      localStorage.removeItem("user");
     },
     setBooks(state, books) {
       state.books = books;
@@ -28,13 +28,16 @@ const store = createStore({
     },
     updateUser(state, updatedUser) {
       state.user = { ...state.user, ...updatedUser };
-      localStorage.setItem('user', JSON.stringify(state.user));
-      console.log('Мутация updateUser выполнена. Новые данные пользователя:', JSON.parse(JSON.stringify(state.user)));
+      localStorage.setItem("user", JSON.stringify(state.user));
+      console.log(
+        "Мутация updateUser выполнена. Новые данные пользователя:",
+        JSON.parse(JSON.stringify(state.user))
+      );
     },
     addReviewToBook(state, { bookId, review }) {
-      const book = state.books.find(book => book.id === bookId);
+      const book = state.books.find((book) => book.id === bookId);
       if (!book) {
-        console.error('Book not found:', bookId);
+        console.error("Book not found:", bookId);
         return;
       }
       if (!book.reviews) {
@@ -43,41 +46,48 @@ const store = createStore({
       book.reviews.push(review);
     },
     setReviews(state, { bookId, reviews }) {
-      const book = state.books.find(book => book.id === bookId);
+      const book = state.books.find((book) => book.id === bookId);
       if (book) {
-        book.reviews = reviews.filter(review => review.content && review.content.trim() !== '');
+        book.reviews = reviews.filter(
+          (review) => review.content && review.content.trim() !== ""
+        );
       }
     },
     addBook(state, book) {
       state.books.push(book);
     },
     updateBook(state, updatedBook) {
-      const index = state.books.findIndex(book => book.id === updatedBook.id);
+      const index = state.books.findIndex((book) => book.id === updatedBook.id);
       if (index !== -1) {
         state.books.splice(index, 1, updatedBook);
       }
     },
     removeBook(state, bookId) {
-      state.books = state.books.filter(book => book.id !== bookId);
+      state.books = state.books.filter((book) => book.id !== bookId);
     },
     addLibrarian(state, librarian) {
       state.librarians.push(librarian);
     },
     removeLibrarian(state, librarianId) {
-      state.librarians = state.librarians.filter(librarian => librarian.id !== librarianId);
-    }
+      state.librarians = state.librarians.filter(
+        (librarian) => librarian.id !== librarianId
+      );
+    },
   },
   actions: {
     async login({ commit }, credentials) {
       try {
-        const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/auth', credentials);
+        const response = await axios.post(
+          "https://443e3cc17ad7db7e.mokky.dev/auth",
+          credentials
+        );
         const user = response.data;
-        localStorage.setItem('token', user.token);
-        
-        commit('setUser', user);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`; 
+        localStorage.setItem("token", user.token);
+
+        commit("setUser", user);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
       } catch (error) {
-        console.error('Login failed:', error);
+        console.error("Login failed:", error);
       }
     },
     async reserveBook({ commit, state }, { bookId }) {
@@ -85,225 +95,277 @@ const store = createStore({
         const userId = state.user.id;
         const requestData = {
           user_id: userId,
-          book_id: bookId
+          book_id: bookId,
         };
-        const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/bookings?_relations=users,books', requestData, {
-          headers: {
-            Authorization: `Bearer ${state.user.token}`
+        const response = await axios.post(
+          "https://443e3cc17ad7db7e.mokky.dev/bookings?_relations=users,books",
+          requestData,
+          {
+            headers: {
+              Authorization: `Bearer ${state.user.token}`,
+            },
           }
-        });
-        console.log('Reservation successful:', response.data);
-        const reservedBook = await axios.get(`https://443e3cc17ad7db7e.mokky.dev/books/${bookId}`);
-        commit('setReservedBooks', [...state.reservedBooks, reservedBook.data]);
+        );
+        console.log("Reservation successful:", response.data);
+        const reservedBook = await axios.get(
+          `https://443e3cc17ad7db7e.mokky.dev/books/${bookId}`
+        );
+        commit("setReservedBooks", [...state.reservedBooks, reservedBook.data]);
       } catch (error) {
-        console.error('Book reservation failed:', error);
+        console.error("Book reservation failed:", error);
         throw error;
       }
     },
     async register({ commit }, userData) {
       try {
-        const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/register', userData);
+        const response = await axios.post(
+          "https://443e3cc17ad7db7e.mokky.dev/register",
+          userData
+        );
         const user = response.data;
-        localStorage.setItem('token', user.token);
-        commit('setUser', user);
-        
-        axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`; 
+        localStorage.setItem("token", user.token);
+        commit("setUser", user);
+
+        axios.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
       } catch (error) {
-        console.error('Registration failed:', error);
+        console.error("Registration failed:", error);
       }
     },
     async fetchUser({ commit, state }) {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (token) {
-          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         }
-    
+
         if (state.user && state.user.token) {
-          const response = await axios.get('https://443e3cc17ad7db7e.mokky.dev/auth_me', {
-            headers: {
-              Authorization: `Bearer ${state.user.token}`
+          const response = await axios.get(
+            "https://443e3cc17ad7db7e.mokky.dev/auth_me",
+            {
+              headers: {
+                Authorization: `Bearer ${state.user.token}`,
+              },
             }
-          });
-          commit('setUser', response.data);
+          );
+          commit("setUser", response.data);
         }
       } catch (error) {
-        console.error('Fetching user data failed:', error);
+        console.error("Fetching user data failed:", error);
       }
     },
     logout({ commit }) {
-      commit('logout');
-      localStorage.removeItem('token');
-      delete axios.defaults.headers.common['Authorization']; // Удаляем токен из заголовков
+      commit("logout");
+      localStorage.removeItem("token");
+      delete axios.defaults.headers.common["Authorization"]; // Удаляем токен из заголовков
     },
-    
+
     async fetchBooks({ commit }) {
       try {
-        const response = await axios.get('https://443e3cc17ad7db7e.mokky.dev/books');
-        console.log('Данные книг с сервера:', response.data);
-        commit('setBooks', response.data);
+        const response = await axios.get(
+          "https://443e3cc17ad7db7e.mokky.dev/books"
+        );
+        console.log("Данные книг с сервера:", response.data);
+        commit("setBooks", response.data);
       } catch (error) {
-        console.error('Fetching books failed:', error);
+        console.error("Fetching books failed:", error);
       }
     },
     async updateProfile({ commit, state }, userProfile) {
       try {
-        console.log('Отправка данных профиля на сервер:', userProfile);
-        const response = await axios.patch(`https://443e3cc17ad7db7e.mokky.dev/users/${state.user.id}`, userProfile, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${state.user.token}`
+        console.log("Отправка данных профиля на сервер:", userProfile);
+        const response = await axios.patch(
+          `https://443e3cc17ad7db7e.mokky.dev/users/${state.user.id}`,
+          userProfile,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${state.user.token}`,
+            },
           }
-        });
-        console.log('Ответ от сервера:', response.data);
-        commit('updateUser', response.data);
+        );
+        console.log("Ответ от сервера:", response.data);
+        commit("updateUser", response.data);
       } catch (error) {
-        console.error('Profile update failed:', error);
+        console.error("Profile update failed:", error);
       }
     },
     async deleteReview({ commit, state, dispatch }, { bookId, reviewId }) {
       try {
-        await axios.delete(`https://443e3cc17ad7db7e.mokky.dev/reviews/${reviewId}`, {
-          headers: {
-            'Authorization': `Bearer ${state.user.token}`
-          }});
-        await dispatch('fetchReviews', bookId);
+        await axios.delete(
+          `https://443e3cc17ad7db7e.mokky.dev/reviews/${reviewId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${state.user.token}`,
+            },
+          }
+        );
+        await dispatch("fetchReviews", bookId);
       } catch (error) {
-        console.error('Removing review failed:', error);
+        console.error("Removing review failed:", error);
       }
     },
     async fetchReviews({ commit }, bookId) {
       try {
-        const response = await axios.get(`https://443e3cc17ad7db7e.mokky.dev/reviews?book_id=${bookId}`);
-        commit('setReviews', { bookId, reviews: response.data });
+        const response = await axios.get(
+          `https://443e3cc17ad7db7e.mokky.dev/reviews?book_id=${bookId}`
+        );
+        commit("setReviews", { bookId, reviews: response.data });
         return response.data;
       } catch (error) {
-        console.error('Fetching reviews failed:', error);
+        console.error("Fetching reviews failed:", error);
       }
     },
     async addReview({ commit, state }, { bookId, content, rating }) {
-      if (content.trim() === '') {
-        console.error('Review content is empty');
+      if (content.trim() === "") {
+        console.error("Review content is empty");
         return;
       }
       try {
-        const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/reviews', {
-          book_id: bookId,
-          user_id: state.user.id,
-          content: content,
-          rating: rating, 
-          user_name: state.user.name
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${state.user.token}`
+        const response = await axios.post(
+          "https://443e3cc17ad7db7e.mokky.dev/reviews",
+          {
+            book_id: bookId,
+            user_id: state.user.id,
+            content: content,
+            rating: rating,
+            user_name: state.user.name,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${state.user.token}`,
+            },
           }
-        });
-        commit('addReviewToBook', { bookId, review: response.data });
+        );
+        commit("addReviewToBook", { bookId, review: response.data });
         return response.data;
       } catch (error) {
-        console.error('Adding review failed:', error);
+        console.error("Adding review failed:", error);
       }
     },
     async addBook({ commit, state }, bookData) {
       try {
-        const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/books', bookData, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${state.user.token}`
+        const response = await axios.post(
+          "https://443e3cc17ad7db7e.mokky.dev/books",
+          bookData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${state.user.token}`,
+            },
           }
-        });
-        commit('addBook', response.data);
+        );
+        commit("addBook", response.data);
       } catch (error) {
-        console.error('Adding book failed:', error);
+        console.error("Adding book failed:", error);
       }
     },
     async updateBook({ commit, state }, bookData) {
       try {
-        const response = await axios.patch(`https://443e3cc17ad7db7e.mokky.dev/books/${bookData.id}`, bookData, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${state.user.token}`
+        const response = await axios.patch(
+          `https://443e3cc17ad7db7e.mokky.dev/books/${bookData.id}`,
+          bookData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${state.user.token}`,
+            },
           }
-        });
-        commit('updateBook', response.data);
+        );
+        commit("updateBook", response.data);
       } catch (error) {
-        console.error('Updating book failed:', error);
+        console.error("Updating book failed:", error);
       }
     },
     async removeBook({ commit, state }, bookId) {
       try {
-        await axios.delete(`https://443e3cc17ad7db7e.mokky.dev/books/${bookId}`, {
-          headers: {
-            'Authorization': `Bearer ${state.user.token}`
+        await axios.delete(
+          `https://443e3cc17ad7db7e.mokky.dev/books/${bookId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${state.user.token}`,
+            },
           }
-        });
-        commit('removeBook', bookId);
+        );
+        commit("removeBook", bookId);
       } catch (error) {
-        console.error('Removing book failed:', error);
+        console.error("Removing book failed:", error);
       }
     },
     async fetchLibrarians({ commit, state }) {
       try {
-        const response = await axios.get('https://443e3cc17ad7db7e.mokky.dev/users?role=1', {
-          headers: {
-            'Authorization': `Bearer ${state.user.token}`
+        const response = await axios.get(
+          "https://443e3cc17ad7db7e.mokky.dev/users?role=1",
+          {
+            headers: {
+              Authorization: `Bearer ${state.user.token}`,
+            },
           }
-        });
-        commit('setLibrarians', response.data);
+        );
+        commit("setLibrarians", response.data);
       } catch (error) {
-        console.error('Fetching librarians failed:', error);
+        console.error("Fetching librarians failed:", error);
       }
     },
     async addLibrarian({ commit, state }, librarianData) {
       try {
-        const response = await axios.post('https://443e3cc17ad7db7e.mokky.dev/users', { ...librarianData, role: 1 }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${state.user.token}`
+        const response = await axios.post(
+          "https://443e3cc17ad7db7e.mokky.dev/users",
+          { ...librarianData, role: 1 },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${state.user.token}`,
+            },
           }
-        });
-        commit('addLibrarian', response.data);
+        );
+        commit("addLibrarian", response.data);
       } catch (error) {
-        console.error('Adding librarian failed:', error);
+        console.error("Adding librarian failed:", error);
       }
     },
     async deleteLibrarian({ commit, state }, librarianId) {
       try {
-        await axios.delete(`https://443e3cc17ad7db7e.mokky.dev/users/${librarianId}`, {
-          headers: {
-            'Authorization': `Bearer ${state.user.token}`
+        await axios.delete(
+          `https://443e3cc17ad7db7e.mokky.dev/users/${librarianId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${state.user.token}`,
+            },
           }
-        });
-        commit('removeLibrarian', librarianId);
+        );
+        commit("removeLibrarian", librarianId);
       } catch (error) {
-        console.error('Removing librarian failed:', error);
+        console.error("Removing librarian failed:", error);
       }
     },
     async fetchReservedBooks({ commit, state }) {
       try {
-        const response = await axios.get('https://443e3cc17ad7db7e.mokky.dev/bookings?_relations=users,books', {
-          headers: {
-            Authorization: `Bearer ${state.user.token}`
+        const response = await axios.get(
+          "https://443e3cc17ad7db7e.mokky.dev/bookings?_relations=users,books",
+          {
+            headers: {
+              Authorization: `Bearer ${state.user.token}`,
+            },
           }
-        });
-        commit('setReservedBooks', response.data);
+        );
+        commit("setReservedBooks", response.data);
       } catch (error) {
-        console.error('Fetching reserved books failed:', error);
+        console.error("Fetching reserved books failed:", error);
         // Обработка ошибки - можно выводить сообщение пользователю
-        commit('setReservedBooks', []); // Устанавливаем пустой массив, чтобы не вызывало ошибок
-      }},
+        commit("setReservedBooks", []); // Устанавливаем пустой массив, чтобы не вызывало ошибок
+      }
+    },
   },
   getters: {
-    isAuthenticated: state => !!state.user,
-    getUser: state => state.user,
-    getBooks: state => state.books,
-    isSystemAdmin: state => state.user && state.user.role === 0,
-    isLibrarian: state => state.user && state.user.role === 1,
-    getLibrarians: state => state.librarians,
-    reservedBooks: state => state.reservedBooks 
-  }
+    isAuthenticated: (state) => !!state.user,
+    getUser: (state) => state.user,
+    getBooks: (state) => state.books,
+    isSystemAdmin: (state) => state.user && state.user.role === 0,
+    isLibrarian: (state) => state.user && state.user.role === 1,
+    getLibrarians: (state) => state.librarians,
+    reservedBooks: (state) => state.reservedBooks,
+  },
 });
 
 export default store;
-

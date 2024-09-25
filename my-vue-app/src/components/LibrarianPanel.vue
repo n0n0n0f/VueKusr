@@ -4,35 +4,74 @@
     <form @submit.prevent="addNewBook" class="book-form">
       <div class="form-group">
         <label for="title" class="label">Название:</label>
-        <input type="text" v-model="newBook.title" required class="input-field">
+        <input
+          type="text"
+          v-model="newBook.title"
+          required
+          class="input-field"
+        />
       </div>
       <div class="form-group">
         <label for="author" class="label">Автор:</label>
-        <input type="text" v-model="newBook.author" required class="input-field">
+        <input
+          type="text"
+          v-model="newBook.author"
+          required
+          class="input-field"
+        />
       </div>
       <div class="form-group">
         <label for="genre" class="label">Жанр:</label>
-        <input type="text" v-model="newBook.genre" required class="input-field">
+        <input
+          type="text"
+          v-model="newBook.genre"
+          required
+          class="input-field"
+        />
       </div>
       <div class="form-group">
         <label for="description" class="label">Описание:</label>
-        <textarea v-model="newBook.description" required class="input-field"></textarea>
+        <textarea
+          v-model="newBook.description"
+          required
+          class="input-field"
+        ></textarea>
       </div>
       <div class="form-group">
         <label for="language" class="label">Язык:</label>
-        <input type="text" v-model="newBook.language" required class="input-field">
+        <input
+          type="text"
+          v-model="newBook.language"
+          required
+          class="input-field"
+        />
       </div>
       <div class="form-group">
         <label for="isbn" class="label">ISBN:</label>
-        <input type="text" v-model="newBook.isbn" required class="input-field">
+        <input
+          type="text"
+          v-model="newBook.isbn"
+          required
+          class="input-field"
+        />
       </div>
       <div class="form-group">
         <label for="imageUrl" class="label">URL обложки:</label>
-        <input type="text" v-model="newBook.imageUrl" required class="input-field">
+        <input
+          type="text"
+          v-model="newBook.imageUrl"
+          required
+          class="input-field"
+        />
       </div>
       <div class="form-group">
         <label for="category" class="label">Категория:</label>
-        <input type="text" v-model="newBook.category" required class="input-field">
+        <input
+          type="text"
+          v-model="newBook.category"
+          required
+          class="input-field"
+        />
       </div>
       <button type="submit" class="btn add-btn">Добавить книгу</button>
     </form>
@@ -41,8 +80,12 @@
       <li v-for="book in getBooks" :key="book.id" class="book-item">
         <p class="book-info">{{ book.title }} - {{ book.author }}</p>
         <div class="action-buttons">
-          <button @click="removeBook(book.id)" class="btn delete-btn">Удалить</button>
-          <button @click="editBook(book)" class="btn edit-btn">Редактировать</button>
+          <button @click="removeBook(book.id)" class="btn delete-btn">
+            Удалить
+          </button>
+          <button @click="editBook(book)" class="btn edit-btn">
+            Редактировать
+          </button>
         </div>
       </li>
     </ul>
@@ -51,19 +94,38 @@
       <form @submit.prevent="updateExistingBook" class="book-form">
         <div class="form-group">
           <label for="title" class="label">Название:</label>
-          <input type="text" v-model="editingBook.title" required class="input-field">
+          <input
+            type="text"
+            v-model="editingBook.title"
+            required
+            class="input-field"
+          />
         </div>
         <div class="form-group">
           <label for="author" class="label">Автор:</label>
-          <input type="text" v-model="editingBook.author" required class="input-field">
+          <input
+            type="text"
+            v-model="editingBook.author"
+            required
+            class="input-field"
+          />
         </div>
         <div class="form-group">
           <label for="genre" class="label">Жанр:</label>
-          <input type="text" v-model="editingBook.genre" required class="input-field">
+          <input
+            type="text"
+            v-model="editingBook.genre"
+            required
+            class="input-field"
+          />
         </div>
         <div class="form-group">
           <label for="description" class="label">Описание:</label>
-          <textarea v-model="editingBook.description" required class="input-field"></textarea>
+          <textarea
+            v-model="editingBook.description"
+            required
+            class="input-field"
+          ></textarea>
         </div>
         <button type="submit" class="btn save-btn">Сохранить изменения</button>
       </form>
@@ -74,32 +136,31 @@
   </div>
 </template>
 
-
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from "vuex";
 
 export default {
-  name: 'BookManagement',
+  name: "BookManagement",
   data() {
     return {
       newBook: {
-        title: '',
-        author: '',
-        genre: '',
-        description: '',
-        language: '',
-        isbn: '',
-        imageUrl: '',
-        category: ''
+        title: "",
+        author: "",
+        genre: "",
+        description: "",
+        language: "",
+        isbn: "",
+        imageUrl: "",
+        category: "",
       },
-      editingBook: null
+      editingBook: null,
     };
   },
   computed: {
-    ...mapGetters(['isLibrarian', 'getBooks'])
+    ...mapGetters(["isLibrarian", "getBooks"]),
   },
   methods: {
-    ...mapActions(['fetchBooks', 'addBook', 'updateBook', 'removeBook']),
+    ...mapActions(["fetchBooks", "addBook", "updateBook", "removeBook"]),
     async addNewBook() {
       await this.addBook(this.newBook);
       this.resetNewBook();
@@ -118,25 +179,25 @@ export default {
         await this.removeBook(bookId);
         this.fetchBooks();
       } catch (error) {
-        console.error('Error while removing book:', error);
+        console.error("Error while removing book:", error);
       }
     },
     resetNewBook() {
       this.newBook = {
-        title: '',
-        author: '',
-        genre: '',
-        description: '',
-        language: '',
-        isbn: '',
-        imageUrl: '',
-        category: ''
+        title: "",
+        author: "",
+        genre: "",
+        description: "",
+        language: "",
+        isbn: "",
+        imageUrl: "",
+        category: "",
       };
-    }
+    },
   },
   created() {
     this.fetchBooks();
-  }
+  },
 };
 </script>
 <style scoped>
@@ -186,7 +247,7 @@ textarea.input-field {
 }
 
 .add-btn {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
 }
 
@@ -196,12 +257,12 @@ textarea.input-field {
 }
 
 .edit-btn {
-  background-color: #2196F3;
+  background-color: #2196f3;
   color: white;
 }
 
 .save-btn {
-  background-color: #FFC107;
+  background-color: #ffc107;
   color: #333;
 }
 
@@ -237,4 +298,3 @@ textarea.input-field {
   color: #f44336;
 }
 </style>
-

@@ -4,11 +4,23 @@
     <form @submit.prevent="login" class="login-form">
       <div class="form-group">
         <label for="email">Email:</label>
-        <input v-model="email" type="email" id="email" placeholder="Enter your email" required>
+        <input
+          v-model="email"
+          type="email"
+          id="email"
+          placeholder="Enter your email"
+          required
+        />
       </div>
       <div class="form-group">
         <label for="password">Password:</label>
-        <input v-model="password" type="password" id="password" placeholder="Enter your password" required>
+        <input
+          v-model="password"
+          type="password"
+          id="password"
+          placeholder="Enter your password"
+          required
+        />
       </div>
       <button type="submit" class="btn-login">Login</button>
     </form>
@@ -16,22 +28,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
+import { ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
-const email = ref('');
-const password = ref('');
+const email = ref("");
+const password = ref("");
 
 const store = useStore();
 const router = useRouter();
 
 const login = async () => {
   try {
-    await store.dispatch('login', { email: email.value, password: password.value });
-    router.push('/dashboard');
+    await store.dispatch("login", {
+      email: email.value,
+      password: password.value,
+    });
+    router.push("/dashboard");
   } catch (error) {
-    console.error('Login failed:', error);
+    console.error("Login failed:", error);
   }
 };
 </script>
@@ -44,7 +59,7 @@ const login = async () => {
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #f9f9f9;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 .login-form {
@@ -66,17 +81,17 @@ input[type="password"] {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  outline: none; 
+  outline: none;
 }
 
 .btn-login {
   padding: 10px 20px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease; 
+  transition: background-color 0.3s ease;
 }
 
 .btn-login:hover {

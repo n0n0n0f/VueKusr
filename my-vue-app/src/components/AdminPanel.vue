@@ -16,12 +16,21 @@
       </div>
       <button type="submit" class="submit-button">Добавить библиотекаря</button>
     </form>
-    
+
     <h2>Список библиотекарей</h2>
     <ul class="librarians-list">
-      <li v-for="librarian in librarians" :key="librarian.id" class="librarian-item">
+      <li
+        v-for="librarian in librarians"
+        :key="librarian.id"
+        class="librarian-item"
+      >
         <span>{{ librarian.name }} ({{ librarian.email }})</span>
-        <button @click="deleteLibrarianAction(librarian.id)" class="delete-button">Удалить</button>
+        <button
+          @click="deleteLibrarianAction(librarian.id)"
+          class="delete-button"
+        >
+          Удалить
+        </button>
       </li>
     </ul>
   </div>
@@ -31,35 +40,35 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue';
-import { useStore } from 'vuex';
+import { onMounted, ref, computed } from "vue";
+import { useStore } from "vuex";
 
 const store = useStore();
 
 const newLibrarian = ref({
-  name: '',
-  email: '',
-  password: ''
+  name: "",
+  email: "",
+  password: "",
 });
 
 const addNewLibrarian = async () => {
   try {
-    await store.dispatch('addLibrarian', newLibrarian.value);
-    newLibrarian.value.name = '';
-    newLibrarian.value.email = '';
-    newLibrarian.value.password = '';
-    await store.dispatch('fetchLibrarians'); 
+    await store.dispatch("addLibrarian", newLibrarian.value);
+    newLibrarian.value.name = "";
+    newLibrarian.value.email = "";
+    newLibrarian.value.password = "";
+    await store.dispatch("fetchLibrarians");
   } catch (error) {
-    console.error('Error adding librarian:', error);
+    console.error("Error adding librarian:", error);
   }
 };
 
 const deleteLibrarianAction = async (librarianId) => {
   try {
-    await store.dispatch('deleteLibrarian', librarianId);
-    await store.dispatch('fetchLibrarians'); 
+    await store.dispatch("deleteLibrarian", librarianId);
+    await store.dispatch("fetchLibrarians");
   } catch (error) {
-    console.error('Error deleting librarian:', error);
+    console.error("Error deleting librarian:", error);
   }
 };
 
@@ -67,9 +76,8 @@ const isSystemAdmin = computed(() => store.getters.isSystemAdmin);
 const librarians = computed(() => store.getters.getLibrarians);
 
 onMounted(async () => {
-  await store.dispatch('fetchLibrarians');
+  await store.dispatch("fetchLibrarians");
 });
-
 </script>
 
 <style scoped>
@@ -98,7 +106,7 @@ onMounted(async () => {
 }
 
 .submit-button {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   padding: 10px 20px;

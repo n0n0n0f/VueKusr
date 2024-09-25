@@ -8,13 +8,13 @@
 
 <script>
 export default {
-  name: 'Unauthorized',
+  name: "Unauthorized",
   methods: {
     goHome() {
-      this.$router.push('/');
-    }
-  }
-}
+      this.$router.push("/");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -34,7 +34,7 @@ h1 {
 button {
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;

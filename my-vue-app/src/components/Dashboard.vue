@@ -7,9 +7,9 @@
 </template>
 
 <script setup>
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
-import { computed } from 'vue';
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { computed } from "vue";
 
 const store = useStore();
 const router = useRouter();
@@ -17,8 +17,8 @@ const router = useRouter();
 const user = computed(() => store.state.user);
 
 const logout = () => {
-  store.dispatch('logout');
-  router.push('/');
+  store.dispatch("logout");
+  router.push("/");
 };
 </script>
 

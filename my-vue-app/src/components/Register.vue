@@ -4,19 +4,19 @@
     <form @submit.prevent="register" class="register-form">
       <div class="form-group">
         <label for="name">Name:</label>
-        <input v-model="name" type="text" id="name" required>
+        <input v-model="name" type="text" id="name" required />
       </div>
       <div class="form-group">
         <label for="email">Email:</label>
-        <input v-model="email" type="email" id="email" required>
+        <input v-model="email" type="email" id="email" required />
       </div>
       <div class="form-group">
         <label for="password">Password:</label>
-        <input v-model="password" type="password" id="password" required>
+        <input v-model="password" type="password" id="password" required />
       </div>
       <div class="form-group">
         <label for="phone">Phone:</label>
-        <input v-model="phone" type="text" id="phone" required>
+        <input v-model="phone" type="text" id="phone" required />
       </div>
       <button type="submit" class="btn-register">Register</button>
     </form>
@@ -25,24 +25,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
+import { ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
-const name = ref('');
-const email = ref('');
-const password = ref('');
-const phone = ref('');
+const name = ref("");
+const email = ref("");
+const password = ref("");
+const phone = ref("");
 
 const store = useStore();
 const router = useRouter();
 
 const register = async () => {
   try {
-    await store.dispatch('register', { name: name.value, email: email.value, password: password.value, phone: phone.value });
-    router.push('/dashboard');
+    await store.dispatch("register", {
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      phone: phone.value,
+    });
+    router.push("/dashboard");
   } catch (error) {
-    console.error('Registration failed:', error);
+    console.error("Registration failed:", error);
   }
 };
 </script>
@@ -55,7 +60,7 @@ const register = async () => {
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #f9f9f9;
-  position: relative; 
+  position: relative;
 }
 
 .register-form {
@@ -82,7 +87,7 @@ input[type="password"] {
 
 .btn-register {
   padding: 10px 20px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
@@ -97,14 +102,13 @@ input[type="password"] {
   background-color: #3e8e41;
 }
 
-
 .decoration {
   position: absolute;
   bottom: -10px;
   left: 0;
   width: 100%;
   height: 20px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   border-radius: 0 0 5px 5px;
 }
 </style>
