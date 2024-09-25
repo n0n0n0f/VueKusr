@@ -106,7 +106,6 @@ export default {
   async created() {
     await this.$store.dispatch('fetchUser');
     await this.fetchReservedBooks();
-    console.log('Забронированные книги:', this.reservedBooks);
   }
 };
 </script>

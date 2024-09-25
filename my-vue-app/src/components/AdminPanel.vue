@@ -63,7 +63,6 @@ const deleteLibrarianAction = async (librarianId) => {
   }
 };
 
-// Используем computed для получения данных из геттера Vuex
 const isSystemAdmin = computed(() => store.getters.isSystemAdmin);
 const librarians = computed(() => store.getters.getLibrarians);
 

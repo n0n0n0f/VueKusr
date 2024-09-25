@@ -42,7 +42,7 @@
     <div v-else>
       <p class="no-books">Книг нет</p>
     </div>
-    <div class="decorative-line"></div> <!-- New decorative line -->
+    <div class="decorative-line"></div> 
   </div>
 </template>
 
@@ -51,7 +51,7 @@
   padding: 20px;
 }
 
-/* Updated styles for filter toggle button */
+
 .filter-toggle {
   background-color: #E57373;
   color: white;
@@ -59,14 +59,14 @@
   padding: 10px;
   cursor: pointer;
   border-radius: 5px;
-  margin-bottom: 10px; /* Added margin */
+  margin-bottom: 10px; 
 }
 
 .filter-options {
   margin-top: 10px;
 }
 
-/* Updated styles for search input */
+
 .search-input {
   width: 100%;
   padding: 10px;
@@ -74,17 +74,17 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
-  margin-bottom: 20px; /* Added margin */
+  margin-bottom: 20px; 
 }
 
-/* New styles for decorative line */
+
 .decorative-line {
   border-top: 1px dashed #ccc;
-  margin-top: 40px; /* Adjust as needed */
-  margin-bottom: 20px; /* Added margin */
+  margin-top: 40px; 
+  margin-bottom: 20px; 
 }
 
-/* Rest of the styles remain unchanged */
+
 .book-grid {
   display: flex;
   flex-wrap: wrap;
